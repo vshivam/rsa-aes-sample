@@ -1,0 +1,58 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+        
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <script type="text/javascript" src="jquery.min.js"></script>
+  <script type="text/javascript" src="forge.min.js"></script>
+
+
+  <script type="text/javascript">
+  $(document).ready(function() {
+
+  		<!--RSA Encryption Decryption -->
+	 	var publicKey = forge.pki.publicKeyFromPem('-----BEGIN PUBLIC KEY-----MIIBIjANBgkqhkiG9w0BAQEFAAOrh8wrme27sQAgzO3P/zaZrcM85ZToTwdHTFXXXXXXXXXXXX--------------SAMPLE----------------KEY---------------XXXXXXXXXXXXXXXXXXuBCjs7jColPV1iGGf8vYt3NJaw0xzpKPrtYx0uwBI5GCPH/rGahTVTVojqoz+DP5yAqVB0ay72uPaq9w/k3y0/PwebQqOXLRnmI1uJHlQ4HAXuQlK14USmYFjq48U7ag1vhAGZYigNuDtGwK7QIDAQAB-----END PUBLIC KEY----- ');
+	  	var buffer = forge.util.createBuffer('This is just another test string', 'utf8');
+		var binaryString = buffer.getBytes();
+	  	var encrypted = publicKey.encrypt(binaryString, 'RSA-OAEP', {
+		  md: forge.md.sha256.create(),
+		  mgf1: {
+		    md: forge.md.sha1.create()
+		  }
+		});
+	  	var encryptedString = forge.util.encode64(encrypted);
+	  	var privateKey = forge.pki.privateKeyFromPem('-----BEGIN PRIVATE KEY-----MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCmgaYY1FdHYGuuHzCuZ7buxACDM7c//NpmtwzzllOhPB0dMUC5Y0NjYEfERGaQUiQxCD8XU1k3LAPTJr0oJ2gwsH/ItPKAptqO419ScL0/SlXaRYSXahusyBhUdWAeDCsKXwXSUFn7wJaVvTTkC4EKOzuMKiU9XWIYZ/y9i3------------------SAMPLE----------------KEY--------------------qjP4M/nICpUHRrLva49qr3D+TfLT8/B5tCo5ctGeYjW4keVDgcBe5CUrXhRKZgWOrjxTtqDW+EAZliKA24NWyS8O461Erb5Wc57mgs9RnWRg4DQNOGDUDoFScLzlqGgjMf/H20bArtAgMBAAECggEAPIx48h6Ffpc5kSAWe9WLWFg+N3fe843nfeKi+xF3Z/KMQ8GAuHRuEPxIjdtLVBYNNW5N5V5igMt7yyIcsA3x2OstaiDHB96mLyGjVeFCHd8iS/m1h2qSEPvLJHYBlClNXZPqJwKBgQDOc7yPRwopodEOtNQNRwGNLYfLDbUiCjGzCigZasbCECqZs51zFljv4h8ntyedO0q7mbtrUnskUI8fYGigYMlxRsMXovTUrPWUWoIIOVfRFivANozLsdOEz1nEY1kDZPKKQOwsMuPiYoM24Km0La4Q+c7oZmEG0TD/cEYhRMRyywKBgQCdzNj5/M4aEjMzxrilpePYoU48E6mz55Hb0xPjZijwcj4sfr+kWn251d8PS2OlgnTP8KwPbiSFY4wqgc4ExdRUZiYOjYrURR9rBlxIQiMJBBpMPNXIyqtKs8AkrL6qGiftFnW0G+egt52Pc9c7lkfG1zW7Z6GaVEag1EVw7OmFFwKBgBKbpew4F/dmqWQs8kv8EWy7JNktdB0MVCxyBuk7kYyeTmiqIs/jvMJqXCqFPKHUXUkJczYaKhU82ZmXY/bIon9+RElWG8Erkbr8aWn6WSr0V58si4Y0kf8PfWTRG43NxHqnnWHieF3ISVFh8InX8C+BhJ+30pj9s+/iG8AV5ar/AoGAWfUH97pXmXqD9E181GZkh+hbpS/26AIJDFMSjoI938vSbewj8cwn00abFxluL67dFIusKYOuFxu32E7k4ns6llM5LRhSan/cRq324vVLE6bSEi88av2a17LwXu63alGIKH5AB89IZrQcte1li7tPNgg31ivRnqzbeVE4kC5zhWE=-----END PRIVATE KEY-----');
+
+	  	var decrypted = privateKey.decrypt(forge.util.decode64(encryptedString), 'RSA-OAEP', {
+		  md: forge.md.sha256.create(),
+		  mgf1: {
+		    md: forge.md.sha1.create()
+		  }
+		});
+
+		console.log(decrypted);
+
+		<!-- AES Stuff Begins here-->
+
+		<!-- AES Encryption-->
+  		var key = forge.util.decode64('i2zLQ9yiBAw8+817//Czhw==');
+		var iv = key;
+		var input = forge.util.createBuffer('This is an aes test string', 'utf8');
+		var cipher = forge.cipher.createCipher('AES-CBC', key);
+		cipher.start({iv: iv});
+		cipher.update(input);
+		cipher.finish();
+		var encrypted = cipher.output;
+		console.log(encrypted);
+
+		<!-- AES Decryption -->
+		var encryptedAESString = 'uLjB/9WbtH86mBftb585LqgWwqyJ+HNMuUJIQKJWdZSRmwCSji4fSF/FMFRNRcOItGp8RlbpFMW23Qh/sTMD/w==';
+		var decodedAESString = forge.util.decode64(encryptedAESString);
+		var decipher = forge.cipher.createDecipher('AES-CBC', key);
+		decipher.start({iv: key});
+		decipher.update(forge.util.createBuffer(decodedAESString,'raw'));
+		decipher.finish();
+		console.log(forge.util.hexToBytes(decipher.output.toHex()));  	
+	});
+  </script>
+</head>
